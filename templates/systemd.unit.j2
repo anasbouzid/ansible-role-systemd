@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+{% macro to_snake_case(item) -%}
+  {{ item | replace('_', ' ') | title | replace(' ', '') -}}
+{% endmacro %}
+{% macro section_content(key, item) -%}
+  {% set directive = systemd_convert_snake_case_keys | ternary(
+      systemd_readable_snake_case_keys[key] | default(
+        key[0] is upper | ternary(key, to_snake_case(key))
+      ),
+      key
+    )
+  -%}
+  {% if item[key] is string or item[key] is number -%}
+    {{ directive }}={{ item[key] }}{{ '\n' -}}
+  {% elif item[key] is mapping -%}
+    {% for subKey, subValue in item[key].items() -%}
+      {{ directive }}="{{ subKey }}={{ subValue }}"{{ '\n' -}}
+    {% endfor -%}
+  {% elif item[key] is sequence -%}
+    {% for subValue in item[key] -%}
+      {{ directive }}={{ subValue }}{{ '\n' -}}
+    {% endfor -%}
+  {% endif %}
+{% endmacro %}
+
+{% for section in item | dict2items | selectattr('key', 'match', '^.*_section$') | list | items2dict %}
+[{{ (section[0] | upper) ~ (section[1:] | replace('_section', '')) }}]
+{% for key in item[section] -%}
+  {{ section_content(key, item[section]) -}}
+{% endfor %}{{ loop.last | ternary('', '\n') -}}
+{% endfor %}

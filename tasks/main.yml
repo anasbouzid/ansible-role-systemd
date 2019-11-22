@@ -1,0 +1,32 @@
+---
+- name: Create systemd units
+  template:
+    src: systemd.unit.j2
+    dest: "/etc/systemd/system/{{ item.name }}"
+    mode: "{{ item.meta.mode | default('o+r') }}"
+  loop: "{{ systemd_units }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: systemd_units_result
+  notify: Restart systemd changed units
+
+- name: Reload systemd on unit change
+  systemd:
+    daemon_reload: yes
+  when: systemd_units_result.changed
+
+- name: Load systemd units
+  systemd:
+    name: "{{ item.name }}"
+    daemon_reexec: "{{ item.daemon_reexec | default(omit) }}"
+    daemon_reload: "{{ item.daemon_reload | default(omit) }}"
+    enabled: "{{ item.enabled | default(systemd_units_enabled) }}"
+    force: "{{ item.force | default(omit) }}"
+    masked: "{{ item.masked | default(omit) }}"
+    no_block: "{{ item.no_block | default(omit) }}"
+    scope: "{{ item.scope | default(omit) }}"
+    state: "{{ item.state | default(omit) }}"
+  when: not (item.name | regex_search('@\.\w+$'))
+  loop: "{{ systemd_units }}"
+  loop_control:
+    label: "{{ item.name }}"

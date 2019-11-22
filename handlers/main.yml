@@ -1,0 +1,14 @@
+---
+- name: Restart systemd changed units
+  systemd:
+    name: "{{ result.item.name }}"
+    state: restarted
+  when:
+    - systemd_units_restart_changed
+    - not (result.item.name | regex_search('@\.\w+$'))
+    - result is changed
+    - result.item.state is not defined
+  loop: "{{ systemd_units_result.results }}"
+  loop_control:
+    loop_var: result
+    label: "{{ result.item.name }}"
