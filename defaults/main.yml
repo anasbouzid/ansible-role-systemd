@@ -8,7 +8,7 @@ systemd_units_restart_changed: yes
 # Enable units on boot
 systemd_units_enabled: yes
 
-# Convert camel_case keys to PascalCase
+# Convert snake_case keys to PascalCase
 systemd_convert_snake_case_keys: yes
 
 # List of configuration directives
