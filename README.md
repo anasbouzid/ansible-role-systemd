@@ -21,21 +21,21 @@ Available variables are listed below, along with default values (see `defaults/m
 ```yaml
 systemd_units: []
 ```
-A list of dictionaries. For each unit, you must provide a `name`, all other keys are listed in the [syntax heading bellow](#Syntax).
+A list of dictionaries. For each unit, you must provide a `name`, all other keys are listed in the [syntax heading below](#Syntax).
 
 ```yaml
 systemd_units_restart_changed: yes
 ```
-Whether to restart the unit on file change, you can also specify the parameter `restart_changed` for each unit. Template units will always be skipped.
+Whether to restart the unit on file change. You can also specify the parameter `restart_changed` for each unit. Template units will always be skipped.
 
 ```yaml
 systemd_units_enabled: yes
 ```
-Whether to enable units on boot, you can also specify the parameter `enabled` for each unit. Template units will always be skipped.
+Whether to enable units on boot. You can also specify the parameter `enabled` for each unit. Template units will always be skipped.
 
 ### Syntax
 
-A systemd_unit has all the parameters of the [systemd module](https://docs.ansible.com/ansible/latest/modules/systemd_module.html) plus multiple keys ending with `_section`, you can specify as many sections as you want. Each section is a dictionary of [configuration directives](https://www.freedesktop.org/software/systemd/man/systemd.directives.html). If no section is provided, an empty file will be created, use this as an effective way to fully disable a unit.
+A `systemd_unit` has all the parameters of the [systemd module](https://docs.ansible.com/ansible/latest/modules/systemd_module.html) plus multiple keys ending with `_section`, you can specify as many sections as you want. Each section is a dictionary of [configuration directives](https://www.freedesktop.org/software/systemd/man/systemd.directives.html). If no section is provided, an empty file will be created. Use this as an effective way to fully disable a unit.
 
 ```yaml
 - name: foo.service
@@ -84,7 +84,7 @@ Environment="VAR2=word3"
 Environment="VAR3=$word 5 6"
 ```
 
-**Convert camel_case keys to PascalCase**
+**Convert snake_case keys to PascalCase**
 
 ```yaml
 systemd_convert_snake_case_keys: yes
@@ -164,7 +164,7 @@ systemd_units:
       wanted_by: multi-user.target
 ```
 
-To organize your code, your may split units by category.
+To organize your code, your may split units into categories.
 
 ```yaml
 systemd_services: []
